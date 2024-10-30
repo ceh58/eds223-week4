@@ -19,6 +19,7 @@ library(geodata)
 ```
 
 # Create raster objects
+
 ```{r}
 zion_elevation <- rast(system.file("raster/srtm.tif", package = "spDataLarge"))
 
@@ -26,6 +27,7 @@ zion_land <- rast(system.file("raster/nlcd.tif", package = "spDataLarge"))
 ```
 
 ## View on map
+
 ```{r}
 tm_shape(zion_elevation) +
   tm_raster(title = "Elevation (m)")
@@ -38,12 +40,14 @@ tm_shape(zion_land) +
 ```
 
 ## Multilayer raster
+
 ```{r}
 landsat <- rast(system.file("raster/landsat.tif", package = "spDataLarge"))
 #landsat shows 4 nlyr = 4 layers
 ```
 
 ## Map multilayer raster
+
 ```{r}
 # Maps each of the 4 layers
 tm_shape(landsat) +
@@ -51,6 +55,7 @@ tm_shape(landsat) +
 ```
 
 ## Subsetting
+
 ```{r}
 landsat3 <- subset(landsat, 3) # or can call "landsat_3"
 
@@ -59,6 +64,7 @@ tm_shape(landsat3) +
 ```
 
 ## Inspect key elements of a raster layer
+
 ```{r}
 # Find mean of whole matrix
 global(zion_elevation, mean) 
@@ -68,6 +74,7 @@ freq(zion_land)
 ```
 
 # Indexing raster data
+
 ```{r}
 # First row, first column <- update value
 zion_elevation[1,1] <- 0
@@ -84,6 +91,7 @@ test_raster[test_raster < 20] <- NA
 ```
 
 ## Spatial subsetting
+
 ```{r}
 # Define point
 point <- matrix(c(-113, 37.5), ncol = 2)
@@ -96,6 +104,7 @@ terra::extract(landsat, point)
 ```
 
 ### Clip raster
+
 ```{r}
 # Create smaller raster
 clip <- rast(xmin = -113.3, xmax = -113, ymin = 37.2, ymax = 37.9,
@@ -111,6 +120,7 @@ tm_shape(zion_elevation_clip) +
 ```
 
 ### Mask raster
+
 ```{r}
 # Copy elevation raster
 rmask <- zion_elevation
@@ -120,6 +130,7 @@ rmask[rmask < 2000] <- NA
 
 # Bracket subsetting
 masked1 <- zion_elevation[rmask, drop = FALSE]
+plot(masked1)
 
 masked2 <- terra::mask(zion_elevation, rmask)
 ```
@@ -165,6 +176,7 @@ tm_shape(ndvi_rast) +
 ```
 
 ### Focal:
+
 ```{r}
 elevation_focal <- focal(zion_elevation,
       w = matrix(1, nrow = 9, ncol = 9),
@@ -177,17 +189,21 @@ tm_shape(elevation_focal) +
 ```
 
 ### Zonal:
+
 ```{r}
 terra::zonal(zion_elevation, reclassified, fun = mean)
 ```
 
 ### Global:
+
 ```{r}
 terra::global(zion_elevation, mean)
 ```
 
 # Chaning geometries:
+
 ## Changing the extent:
+
 ```{r}
 # Create new raster with larger extent
 extend <- terra::extend(zion_elevation, c(1, 200))
@@ -200,12 +216,14 @@ extend + extend2
 ```
 
 ## Origin:
+
 ```{r}
 # Can reassign, but shouldn't
 origin(zion_elevation)
 ```
 
 ## Changing resolution:
+
 ```{r}
 # Aggregate
 zion_elevation_coarse <- terra::aggregate(zion_elevation,
@@ -231,6 +249,7 @@ tm_shape(zion_elevation_disagg) +
 ```
 
 ## Resampling:
+
 ```{r}
 # Raster we want to resample into
 target_rast <- rast(xmin = -113.2, xmax = -112.9, 
@@ -243,4 +262,3 @@ elevation_resample <- terra::resample(zion_elevation, y = target_rast, method = 
 tm_shape(elevation_resample) +
   tm_raster()
 ```
-
